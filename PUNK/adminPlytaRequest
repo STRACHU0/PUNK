@@ -1,0 +1,31 @@
+<?php
+session_start();
+
+// SPRAWDZANIE SESJI
+if (!isset($_SESSION['user']) || $_SESSION['user'] !== 'admin') {
+    header("Location: admin.php");
+    exit();
+}
+
+require("db.php");
+
+echo "<h2>Panel Administratora: Oczekujące prośby</h2>";
+echo "<p>Zalogowany jako: " . $_SESSION['user'] . " | <a href='logout.php'>Wyloguj</a></p>";
+
+// ... reszta kodu z tabelą (ten sam co poprzednio) ...
+$wynik = mysqli_query($conn, "SELECT * FROM plytyrequest");
+echo "<table border='1'>
+<tr><th>Nazwa</th><th>Piosenka</th><th>Akcje</th></tr>";
+
+while ($wiersz = mysqli_fetch_array($wynik)) {
+    echo "<tr>
+            <td>{$wiersz['nazwaPlytyRequest']}</td>
+            <td>{$wiersz['najpopularPiosenkaRequest']}</td>
+            <td>
+                <a href='process_request.php?action=accept&id={$wiersz['IDPlytyRequest']}'>✅ Akceptuj</a>
+                <a href='process_request.php?action=delete&id={$wiersz['IDPlytyRequest']}'>❌ Usuń</a>
+            </td>
+          </tr>";
+}
+echo "</table>";
+?>
